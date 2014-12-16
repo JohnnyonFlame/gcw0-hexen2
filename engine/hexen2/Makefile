@@ -150,6 +150,9 @@ VORBISLIB=vorbis
 # system memory (set to yes for DOS builds, for example)
 CODECS_USE_ZONE=no
 
+# whether we use EGL to initialize an OpenGL context
+USE_EGL_CONTEXT=no
+
 # include the common dirty stuff
 include $(UHEXEN2_TOP)/scripts/makefile.inc
 
@@ -860,6 +863,15 @@ endif
 
 # End of streaming music settings
 #############################################################
+
+#############################################################
+# OpenGL context creation mechanisms
+#############################################################
+
+ifeq ($(USE_EGL_CONTEXT),yes)
+CPPFLAGS+= -DUSE_EGL_CONTEXT
+LDFLAGS+= -lEGL
+endif
 
 #############################################################
 # Finalize things after the system specific overrides:

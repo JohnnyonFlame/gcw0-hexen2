@@ -213,6 +213,34 @@ qboolean	have_stencil = false;
 // this is useless: things aren't like those in quake
 //static qboolean	fullsbardraw = false;
 
+#ifdef USE_EGL_CONTEXT
+#include <EGL/egl.h>
+
+/* EGL attributes */
+const EGLint egl_configAttribs[] =
+{
+    EGL_RED_SIZE,        5,
+    EGL_GREEN_SIZE,      6,
+    EGL_BLUE_SIZE,       5,
+    EGL_ALPHA_SIZE,      0,
+    EGL_DEPTH_SIZE,      8,
+    EGL_STENCIL_SIZE,    8,
+    EGL_SURFACE_TYPE,    EGL_WINDOW_BIT,
+    EGL_RENDERABLE_TYPE, EGL_OPENGL_ES_BIT,
+    EGL_NONE
+};
+
+static const EGLint egl_contextAttribs[] = {
+    EGL_NONE,
+};
+
+/* EGL variables & handles */
+static EGLDisplay   egl_display;
+static EGLConfig    egl_config;
+static EGLContext   egl_context;
+static EGLSurface   egl_windowSurface;
+#endif
+
 // menu drawing
 static void VID_MenuDraw (void);
 static void VID_MenuKey (int key);
@@ -411,7 +439,9 @@ static qboolean VID_SetMode (int modenum)
 	in_mode_set = true;
 
 	//flags = (SDL_OPENGL|SDL_NOFRAME);
+#ifndef USE_EGL_CONTEXT
 	flags = (SDL_OPENGL);
+
 	if (vid_config_fscr.integer)
 		flags |= SDL_FULLSCREEN;
 
@@ -450,6 +480,59 @@ static qboolean VID_SetMode (int modenum)
 	VID_SetIcon();
 
 	screen = SDL_SetVideoMode (modelist[modenum].width, modelist[modenum].height, bpp, flags);
+#else
+	flags = 0;
+
+	egl_display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+	if (egl_display == EGL_NO_DISPLAY)
+	{
+		Con_SafePrintf("eglGetDisplay(...) failed, error code: %i\n", eglGetError());
+		return false;
+	}
+
+	EGLint major_v;
+	EGLint minor_v;
+	if (!eglInitialize(egl_display, &major_v, &minor_v))
+	{
+		Con_SafePrintf("eglInitialize(...) failed, error code: %i\n", eglGetError());
+		return false;
+	}
+
+	int egl_configCount;
+	if (!eglChooseConfig(egl_display, egl_configAttribs, &egl_config, 1, &egl_configCount))
+	{
+		Con_SafePrintf("eglChooseConfig(...) failed, error code: %i\n", eglGetError());
+		return false;
+	}
+
+	egl_context = eglCreateContext(egl_display, egl_config, NULL, egl_contextAttribs);
+	if (egl_context == EGL_NO_CONTEXT)
+	{
+		Con_SafePrintf("eglCreateContext(...) failed, error code: %i\n", eglGetError());
+		return false;
+	}
+
+	egl_windowSurface = eglCreateWindowSurface(egl_display, egl_config, 0, NULL);
+	if (egl_windowSurface == EGL_NO_SURFACE)
+	{
+		Con_SafePrintf("eglCreateWindowSurface(...) failed, error code: %i\n", eglGetError());
+		return false;
+	}
+
+	eglMakeCurrent(egl_display, egl_windowSurface, egl_windowSurface, egl_context);
+
+	VID_SetIcon();
+
+	screen = SDL_SetVideoMode (0, 0, 0, flags);
+	EGLint w;
+	EGLint h;
+	eglQuerySurface(egl_display,egl_windowSurface,EGL_WIDTH,&w);
+	eglQuerySurface(egl_display,egl_windowSurface,EGL_HEIGHT,&h);
+
+	modelist[modenum].width = w;
+	modelist[modenum].height = h;
+#endif
+
 	if (!screen)
 	{
 		if (!multisample)
@@ -968,7 +1051,11 @@ void GL_BeginRendering (int *x, int *y, int *width, int *height)
 void GL_EndRendering (void)
 {
 	if (!scr_skipupdate)
+#ifndef USE_EGL_CONTEXT
 		SDL_GL_SwapBuffers();
+#else
+		eglSwapBuffers(egl_display, egl_windowSurface);
+#endif
 
 // handle the mouse state when windowed if that's changed
 	if (_enable_mouse.integer != enable_mouse /*&& modestate == MS_WINDOWED*/)
