@@ -593,7 +593,7 @@ static void Key_Message (int key)
 		return;
 	}
 
-	if (key == K_ESCAPE)
+	if (key == K_MENU_BACKBUTTON || key == K_MENU_TOGGLE)
 	{
 		Key_EndChat ();
 		return;
@@ -871,7 +871,7 @@ void Key_Init (void)
 	keyshift['`'] = '~';
 	keyshift['\\'] = '|';
 
-	menubound[K_ESCAPE] = true;
+	menubound[K_MENU_CANCELBIND] = true;
 	for (i = 0; i < 12; i++)
 		menubound[K_F1+i] = true;
 
@@ -941,10 +941,16 @@ void Key_Event (int key, qboolean down)
 		shift_down = down;
 
 // handle escape specialy, so the user can never unbind it
-	if (key == K_ESCAPE)
+	if (key == K_MENU_TOGGLE || (key == K_MENU_BACKBUTTON && key_dest != key_game))
 	{
 		if (!down)
 			return;
+		if (key == K_MENU_TOGGLE && key_dest != key_menubind)
+		{
+			M_ToggleMenu_f ();
+			return;
+		}
+
 		switch (key_dest)
 		{
 		case key_message:

@@ -137,6 +137,11 @@
 #define	K_AUX31			241
 #define	K_AUX32			242
 
+#define K_MENU_ACTION			K_CTRL
+#define K_MENU_BACKBUTTON		K_ALT
+#define K_MENU_CANCELBIND		K_ENTER
+#define K_MENU_TOGGLE			K_ENTER
+
 
 #define	MAXCMDLINE	256
 

@@ -1005,12 +1005,12 @@ int SCR_ModalMessage (const char *text)
 	{
 		key_count = -1;		// wait for a key down and up
 		Sys_SendKeyEvents ();
-	} while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE);
+	} while (key_lastpress != 'y' && key_lastpress != 'n' && key_lastpress != K_ESCAPE && key_lastpress != K_MENU_ACTION && key_lastpress != K_MENU_BACKBUTTON);
 
 	scr_fullupdate = 0;
 	SCR_UpdateScreen ();
 
-	return key_lastpress == 'y';
+	return key_lastpress == 'y' || key_lastpress == K_MENU_ACTION;
 }
 
 //=============================================================================

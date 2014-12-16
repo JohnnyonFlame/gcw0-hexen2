@@ -622,7 +622,7 @@ static void M_Main_Key (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		// leaving the main menu, reactivate mouse - S.A.
 		menu_disabled_mouse = false;
 		IN_ActivateMouse ();
@@ -649,7 +649,7 @@ static void M_Main_Key (int key)
 			m_main_cursor = MAIN_ITEMS - 1;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		m_entersound = true;
 
 		switch (m_main_cursor)
@@ -735,7 +735,7 @@ static void M_Difficulty_Key (int key)
 	case K_LEFTARROW:
 	case K_RIGHTARROW:
 		break;
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Class_f ();
 		break;
 	case K_DOWNARROW:
@@ -748,7 +748,7 @@ static void M_Difficulty_Key (int key)
 		if (--m_diff_cursor < 0)
 			m_diff_cursor = DIFF_ITEMS - 1;
 		break;
-	case K_ENTER:
+	case K_MENU_ACTION:
 		Cvar_SetValue ("skill", m_diff_cursor);
 		m_entersound = true;
 		m_state = m_none;
@@ -831,7 +831,7 @@ static void M_Class_Key (int key)
 	case K_LEFTARROW:
 	case K_RIGHTARROW:
 		break;
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_SinglePlayer_f ();
 		break;
 	case K_DOWNARROW:
@@ -856,7 +856,7 @@ static void M_Class_Key (int key)
 			m_class_cursor = f - 1;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		Cbuf_AddText ( va ("playerclass %d\n", m_class_cursor+1) );
 		m_entersound = true;
 		if (!class_flag)
@@ -922,7 +922,7 @@ static void M_SinglePlayer_Key (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Main_f ();
 		break;
 	case K_DOWNARROW:
@@ -949,7 +949,7 @@ static void M_SinglePlayer_Key (int key)
 				m_singleplayer_cursor = SINGLEPLAYER_ITEMS - 1;
 		}
 		break;
-	case K_ENTER:
+	case K_MENU_ACTION:
 		m_entersound = true;
 		m_enter_portals = 0;
 		switch (m_singleplayer_cursor)
@@ -1088,7 +1088,7 @@ static void M_Load_Key (int k)
 {
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_SinglePlayer_f ();
 		break;
 
@@ -1103,7 +1103,7 @@ static void M_Load_Key (int k)
 		M_ScanSaves ();
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		S_LocalSound ("raven/menu2.wav");
 		if (!loadable[load_cursor])
 			return;
@@ -1141,7 +1141,7 @@ static void M_Save_Key (int k)
 {
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_SinglePlayer_f ();
 		break;
 
@@ -1156,7 +1156,7 @@ static void M_Save_Key (int k)
 		M_ScanSaves ();
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		m_state = m_none;
 		Key_SetDest (key_game);
 		Cbuf_AddText (va("save s%i\n", load_cursor));
@@ -1249,7 +1249,7 @@ static void M_MLoad_Key (int k)
 {
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_MultiPlayer_f ();
 		break;
 
@@ -1264,7 +1264,7 @@ static void M_MLoad_Key (int k)
 		M_ScanMSaves ();
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		S_LocalSound ("raven/menu2.wav");
 		if (!loadable[load_cursor])
 			return;
@@ -1306,7 +1306,7 @@ static void M_MSave_Key (int k)
 {
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_MultiPlayer_f ();
 		break;
 
@@ -1321,7 +1321,7 @@ static void M_MSave_Key (int k)
 		M_ScanMSaves ();
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		m_state = m_none;
 		Key_SetDest (key_game);
 		Cbuf_AddText (va("save ms%i\n", load_cursor));
@@ -1397,7 +1397,7 @@ static void M_MultiPlayer_Key (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Main_f ();
 		break;
 
@@ -1413,7 +1413,7 @@ static void M_MultiPlayer_Key (int key)
 			m_multiplayer_cursor = MULTIPLAYER_ITEMS - 1;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		m_entersound = true;
 		switch (m_multiplayer_cursor)
 		{
@@ -1535,7 +1535,7 @@ static void M_Setup_Key (int k)
 
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_MultiPlayer_f ();
 		break;
 
@@ -1603,7 +1603,7 @@ forward:
 			setup_bottom = setup_bottom + 1;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		if (setup_cursor == 0 || setup_cursor == 1)
 			return;
 
@@ -1744,7 +1744,7 @@ static void M_Net_Key (int k)
 again:
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_MultiPlayer_f ();
 		break;
 
@@ -1761,7 +1761,7 @@ again:
 			m_net_cursor = NET_ITEMS - 1;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		m_entersound = true;
 		switch (m_net_cursor)
 		{
@@ -2100,11 +2100,11 @@ static void M_Options_Key (int k)
 {
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Main_f ();
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		m_entersound = true;
 		switch (options_cursor)
 		{
@@ -2342,7 +2342,7 @@ static void M_OpenGL_Key (int k)
 {
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Options_f ();
 		break;
 
@@ -2362,7 +2362,7 @@ static void M_OpenGL_Key (int k)
 			opengl_cursor = 0;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 	case K_LEFTARROW:
 	case K_RIGHTARROW:
 		m_entersound = true;
@@ -2657,7 +2657,7 @@ static void M_Keys_Key (int k)
 
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Options_f ();
 		break;
 
@@ -2677,7 +2677,7 @@ static void M_Keys_Key (int k)
 			keys_cursor = 0;
 		break;
 
-	case K_ENTER:		// go into bind mode
+	case K_MENU_ACTION:		// go into bind mode
 		M_FindKeysForCommand (bindnames[keys_cursor][0], keys);
 		S_LocalSound ("raven/menu2.wav");
 		if (keys[1] != -1)
@@ -2764,7 +2764,7 @@ static void M_Help_Key (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Main_f ();
 		break;
 
@@ -3499,7 +3499,7 @@ static void M_Quit_Key (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 	case 'n':
 	case 'N':
 		if (wasInMenus)
@@ -3514,6 +3514,7 @@ static void M_Quit_Key (int key)
 		}
 		break;
 
+	case K_MENU_ACTION:
 	case 'Y':
 	case 'y':
 		Key_SetDest (key_console);
@@ -3739,7 +3740,7 @@ static void M_SerialConfig_Key (int key)
 
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Net_f ();
 		break;
 
@@ -3816,7 +3817,7 @@ forward:
 
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		if (serialConfig_cursor < 3)
 			goto forward;
 
@@ -3963,7 +3964,7 @@ static void M_ModemConfig_Key (int key)
 
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_SerialConfig_f ();
 		break;
 
@@ -3993,7 +3994,7 @@ static void M_ModemConfig_Key (int key)
 		}
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		if (modemConfig_cursor == 0)
 		{
 			if (modemConfig_dialing == 'P')
@@ -4183,7 +4184,7 @@ static void M_LanConfig_Key (int key)
 
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Net_f ();
 		break;
 
@@ -4210,7 +4211,7 @@ static void M_LanConfig_Key (int key)
 			lanConfig_cursor = 0;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		if ((JoiningGame && lanConfig_cursor <= 1) ||
 		    (!JoiningGame && lanConfig_cursor == 0))
 			break;
@@ -4777,7 +4778,7 @@ static void M_GameOptions_Key (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_Net_f ();
 		break;
 
@@ -4821,7 +4822,7 @@ static void M_GameOptions_Key (int key)
 		M_NetStart_Change (1);
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		S_LocalSound ("raven/menu2.wav");
 		if (gameoptions_cursor == 0)
 		{
@@ -4943,7 +4944,7 @@ static void M_ServerList_Key (int k)
 {
 	switch (k)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		M_Menu_LanConfig_f ();
 		break;
 
@@ -4967,7 +4968,7 @@ static void M_ServerList_Key (int k)
 			slist_cursor = 0;
 		break;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		S_LocalSound ("raven/menu2.wav");
 		m_return_state = m_state;
 		m_return_onerror = true;
@@ -5162,7 +5163,7 @@ void M_Keybind (int key)
 {
 	char	cmd[80];
 	S_LocalSound ("raven/menu1.wav");
-	if (key != K_ESCAPE && key != '`')
+	if (key != K_MENU_CANCELBIND && key != '`')
 	{
 		q_snprintf (cmd, sizeof(cmd), "bind \"%s\" \"%s\"\n",
 			    Key_KeynumToString (key), bindnames[keys_cursor][0]);
