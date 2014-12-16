@@ -1,0 +1,22 @@
+# $Id$
+#
+# This file contains all common GCW0 cross compilation definitions for
+# use with all other build_cross_gcw0.sh scripts for the uhexen2 tree.
+#
+# Change this script to meet your needs and/or environment.
+
+TARGET=mipsel-linux
+PREFIX=build/gcw0
+
+PATH="$PREFIX/bin:$PATH"
+export PATH
+
+CC="$TARGET-gcc"
+AS="$TARGET-as"
+RANLIB="$TARGET-ranlib"
+AR="$TARGET-ar"
+
+export CC WINDRES AS RANLIB AR W32BUILD
+
+STRIPPER="$TARGET-strip"
+
