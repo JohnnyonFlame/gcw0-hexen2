@@ -2133,7 +2133,7 @@ static void M_Options_Draw (void)
 	r = (1.0 - v_gamma.value) / 0.5;
 	M_DrawSlider (220, 60 + 8*OPT_GAMMA, r);
 
-	M_Print (16 + (11 * 8), 60 + 8*OPT_MOUSESPEED,	"Mouse Speed");
+	M_Print (16 + (11 * 8), 60 + 8*OPT_MOUSESPEED,	"Sensitivity");
 	r = (sensitivity.value - 1) / 10;
 	M_DrawSlider (220, 60 + 8*OPT_MOUSESPEED, r);
 
@@ -2161,7 +2161,7 @@ static void M_Options_Draw (void)
 	M_Print (16 + (12 * 8), 60 + 8*OPT_ALWAYRUN,	"Always Run");
 	M_DrawCheckbox (220, 60 + 8*OPT_ALWAYRUN, (cl_forwardspeed.value > 200));
 
-	M_Print (16 + (10 * 8), 60 + 8*OPT_INVMOUSE,	"Invert Mouse");
+	M_Print (16 + (12 * 8), 60 + 8*OPT_INVMOUSE,	"Invert Aim");
 	M_DrawCheckbox (220, 60 + 8*OPT_INVMOUSE, m_pitch.value < 0);
 
 	M_Print (16 + (12 * 8), 60 + 8*OPT_ALWAYSMLOOK,	"Mouse Look");

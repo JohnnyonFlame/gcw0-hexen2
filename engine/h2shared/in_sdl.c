@@ -54,14 +54,14 @@ static int buttonremap[] =
 static	SDL_Joystick	*joy_id = NULL;
 static	int		joy_available;
 
-static	cvar_t	in_joystick = {"joystick", "0", CVAR_ARCHIVE};		/* enable/disable joystick */
+static	cvar_t	in_joystick = {"joystick", "1", CVAR_ARCHIVE};		/* enable/disable joystick */
 
 static	cvar_t	joy_index = {"joy_index", "0", CVAR_NONE};		/* joystick to use when have multiple */
-static	cvar_t	joy_axisforward = {"joy_axisforward", "1", CVAR_NONE};	/* axis for forward/backward movement */
-static	cvar_t	joy_axisside = {"joy_axisside", "0", CVAR_NONE};	/* axis for right/left movement */
+static	cvar_t	joy_axisforward = {"joy_axisforward", "-1", CVAR_NONE};	/* axis for forward/backward movement */
+static	cvar_t	joy_axisside = {"joy_axisside", "-1", CVAR_NONE};	/* axis for right/left movement */
 static	cvar_t	joy_axisup = {"joy_axisup", "-1", CVAR_NONE};		/* axis for up/down movement */
-static	cvar_t	joy_axispitch = {"joy_axispitch", "3", CVAR_NONE};	/* axis for looking up/down" */
-static	cvar_t	joy_axisyaw = {"joy_axisyaw", "2", CVAR_NONE};		/* axis for looking right/left */
+static	cvar_t	joy_axispitch = {"joy_axispitch", "1", CVAR_NONE};	/* axis for looking up/down" */
+static	cvar_t	joy_axisyaw = {"joy_axisyaw", "0", CVAR_NONE};		/* axis for looking right/left */
 /* joy_axisroll & co. (for tilting head right/left??): Nope. */
 static	cvar_t	joy_deadzoneforward = {"joy_deadzoneforward", "0", CVAR_NONE};	/* deadzone tolerance, suggested 0 to 0.01 */
 static	cvar_t	joy_deadzoneside = {"joy_deadzoneside", "0", CVAR_NONE};	/* deadzone tolerance */
@@ -71,8 +71,8 @@ static	cvar_t	joy_deadzoneyaw = {"joy_deadzoneyaw", "0", CVAR_NONE};		/* deadzon
 static	cvar_t	joy_sensitivityforward = {"joy_sensitivityforward", "-1", CVAR_NONE};	/* movement multiplier */
 static	cvar_t	joy_sensitivityside = {"joy_sensitivityside", "1", CVAR_NONE};		/* movement multiplier */
 static	cvar_t	joy_sensitivityup = {"joy_sensitivityup", "1", CVAR_NONE};		/* movement multiplier */
-static	cvar_t	joy_sensitivitypitch = {"joy_sensitivitypitch", "1", CVAR_NONE};	/* movement multiplier */
-static	cvar_t	joy_sensitivityyaw = {"joy_sensitivityyaw", "-1", CVAR_NONE};		/* movement multiplier */
+static	cvar_t	joy_sensitivitypitch = {"joy_sensitivitypitch", "0.5", CVAR_NONE};	/* movement multiplier */
+static	cvar_t	joy_sensitivityyaw = {"joy_sensitivityyaw", "-0.5", CVAR_NONE};		/* movement multiplier */
 
 /* hack to generate uparrow/leftarrow etc. key events
  * for axes if the stick driver isn't generating them. */
@@ -762,12 +762,12 @@ static void IN_JoyMove (usercmd_t *cmd)
 	cmd->upmove += value;
 
 	value  = IN_JoystickGetAxis(joy_axispitch.integer, joy_sensitivitypitch.value, joy_deadzonepitch.value);
-	value *= aspeed * cl_pitchspeed.value;
+	value *= aspeed * cl_pitchspeed.value * sensitivity.value * ((m_pitch.value < 0) ? -1 : 1);
 	cl.viewangles[PITCH] += value;
 	if (value) V_StopPitchDrift ();
 
 	value  = IN_JoystickGetAxis(joy_axisyaw.integer, joy_sensitivityyaw.value, joy_deadzoneyaw.value);
-	value *= aspeed * cl_yawspeed.value;
+	value *= aspeed * cl_yawspeed.value * sensitivity.value;
 	cl.viewangles[YAW] += value;
 
 	/* bounds check pitch */
@@ -1069,7 +1069,7 @@ void IN_SendKeyEvents (void)
 					sym = 0;
 				else	sym = SDLK_EQUALS;
 				break;
-			case 178: /* the '²' key */
+			case 178: /* the 'ï¿½' key */
 				sym = '~';
 				break;
 			default:
