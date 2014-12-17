@@ -2685,7 +2685,7 @@ static void M_Keys_Key (int k)
 		Key_SetDest (key_menubind);
 		break;
 
-	case K_BACKSPACE:	// delete bindings
+	case K_MENU_DELETEBIND:	// delete bindings
 	case K_DEL:		// delete bindings
 		S_LocalSound ("raven/menu2.wav");
 		M_UnbindCommand (bindnames[keys_cursor][0]);
