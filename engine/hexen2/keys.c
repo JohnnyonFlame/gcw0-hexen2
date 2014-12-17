@@ -338,7 +338,7 @@ Interactive line editing and console scrollback
 ====================
 */
 
-static char keyConsole_string_sub[] = " abcdefghijklmnopqrstuvwxyz!\"#$%&()*+,-./:;<=>?@[\\]^_'1234567890";
+char keyConsole_string_sub[] = " abcdefghijklmnopqrstuvwxyz!\"#$%&()*+,-./:;<=>?@[\\]^_'1234567890";
 static void Key_Console (int key)
 {
 	int	history_line_last;

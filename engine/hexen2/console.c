@@ -464,6 +464,16 @@ DRAWING
 ==============================================================================
 */
 
+extern char keyConsole_string_sub[];
+static char Con_getNextAllowedChar(char c, int step)
+{
+	int ret = c;
+	do {
+		ret += step;
+	} while (ret == 0 || !strchr(keyConsole_string_sub, ret));
+
+	return ret;
+}
 
 /*
 ================
@@ -500,8 +510,13 @@ static void Con_DrawInput (void)
 	y = con_vislines - 22;
 	for (i = 0; i < con_linewidth; i++)
 		Draw_Character ((i + 1)<<3, y, text[i]);
-}
 
+	if (key_linepos > 1)
+	{
+		Draw_Character (key_linepos << 3, y - 8, Con_getNextAllowedChar(text[key_linepos-1], 1));
+		Draw_Character (key_linepos << 3, y + 8, Con_getNextAllowedChar(text[key_linepos-1], -1));
+	}
+}
 
 /*
 ================
@@ -615,7 +630,7 @@ void Con_DrawConsole (int lines)
 	}
 
 	row = con->display;
-	for (i = 0; i < rows; i++, y -= 8, row--)
+	for (i = 0; i < rows-1; i++, y -= 8, row--)
 	{
 		if (row < 0)
 			break;
@@ -625,7 +640,7 @@ void Con_DrawConsole (int lines)
 		text = con->text + (row % con_totallines)*con_linewidth;
 
 		for (x = 0; x < con_linewidth; x++)
-			Draw_Character ( (x+1)<<3, y, text[x]);
+			Draw_Character ( (x+1)<<3, y - 8, text[x]);
 	}
 
 // draw the input prompt, user text, and cursor if desired
