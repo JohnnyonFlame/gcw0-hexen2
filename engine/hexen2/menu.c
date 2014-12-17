@@ -337,6 +337,43 @@ void M_DrawTextBox (int x, int y, int width, int lines)
 	M_DrawTransPic (cx, cy+8, p);
 }
 
+static void M_String_Add (char *str, const char *substr)
+{
+	int len = strlen(str);
+
+	do {
+		str[len-1]++;
+	} while (!strchr(substr, str[len-1]) || str[len-1] == 0);
+}
+
+static void M_String_Sub (char *str, const char *substr)
+{
+	int len = strlen(str);
+
+	do {
+		str[len-1]--;
+	} while (!strchr(substr, str[len-1]) || str[len-1] == 0);
+}
+
+static void M_String_Space (char *str, const char *substr, int max)
+{
+	int len = strlen(str);
+
+	if(len >= max)
+		return;
+
+	str[len+1] = 0;
+	str[len] = *substr;
+}
+
+static void M_String_Backspace (char *str)
+{
+	int len = strlen(str);
+
+	if (len > 0)
+		str[len-1] = 0;
+}
+
 //=============================================================================
 
 static int m_save_demonum;
@@ -1450,10 +1487,13 @@ static const int	setup_cursor_table[] = {40, 56, 80, 104, 128, 156};
 
 static char	setup_hostname[16];
 static char	setup_myname[16];
+static char setup_string_sub[] = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&()*+,-./:;<=>?@[\\]^_'1234567890";
+
 static int		setup_oldtop;
 static int		setup_oldbottom;
 static int		setup_top;
 static int		setup_bottom;
+static int		setup_isEdit = 0;
 
 #define	NUM_SETUP_CMDS	6
 
@@ -1531,29 +1571,66 @@ static void M_Setup_Draw (void)
 
 static void M_Setup_Key (int k)
 {
-	int		l;
+	//int		l;
 
 	switch (k)
 	{
 	case K_MENU_BACKBUTTON:
-		M_Menu_MultiPlayer_f ();
+		if (!setup_isEdit)
+			M_Menu_MultiPlayer_f ();
+		else
+			setup_isEdit = 0;
 		break;
 
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
-		setup_cursor--;
-		if (setup_cursor < 0)
-			setup_cursor = NUM_SETUP_CMDS-1;
+		if (!setup_isEdit)
+		{
+			S_LocalSound ("raven/menu1.wav");
+			setup_cursor--;
+			if (setup_cursor < 0)
+				setup_cursor = NUM_SETUP_CMDS-1;
+		}
+		else
+		{
+			if (setup_isEdit)
+			{
+				if (setup_cursor == 0)
+					M_String_Add(setup_hostname, setup_string_sub);
+				else if (setup_cursor == 1)
+					M_String_Add(setup_myname, setup_string_sub);
+			}
+		}
 		break;
-
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
-		setup_cursor++;
-		if (setup_cursor >= NUM_SETUP_CMDS)
-			setup_cursor = 0;
+		if (!setup_isEdit)
+		{
+			S_LocalSound ("raven/menu1.wav");
+			setup_cursor++;
+			if (setup_cursor >= NUM_SETUP_CMDS)
+				setup_cursor = 0;
+		}
+		else
+		{
+			if (setup_isEdit)
+			{
+				if (setup_cursor == 0)
+					M_String_Sub(setup_hostname, setup_string_sub);
+				else if (setup_cursor == 1)
+					M_String_Sub(setup_myname, setup_string_sub);
+			}
+		}
 		break;
-
 	case K_LEFTARROW:
+		if (setup_isEdit)
+		{
+			if (setup_cursor == 0)
+				M_String_Backspace(setup_hostname);
+			else if (setup_cursor == 1)
+				M_String_Backspace(setup_myname);
+
+			return;
+		}
+
 		if (setup_cursor < 2)
 			return;
 		S_LocalSound ("raven/menu3.wav");
@@ -1578,6 +1655,14 @@ static void M_Setup_Key (int k)
 			setup_bottom = setup_bottom - 1;
 		break;
 	case K_RIGHTARROW:
+		if (setup_isEdit)
+		{
+			if (setup_cursor == 0)
+				M_String_Space(setup_hostname, setup_string_sub, 15);
+			else if (setup_cursor == 1)
+				M_String_Space(setup_myname, setup_string_sub, 15);
+		}
+
 		if (setup_cursor < 2)
 			return;
 forward:
@@ -1605,7 +1690,10 @@ forward:
 
 	case K_MENU_ACTION:
 		if (setup_cursor == 0 || setup_cursor == 1)
+		{
+			setup_isEdit = !setup_isEdit;
 			return;
+		}
 
 		if (setup_cursor == 2 || setup_cursor == 3 || setup_cursor == 4)
 			goto forward;
@@ -1620,7 +1708,7 @@ forward:
 		m_entersound = true;
 		M_Menu_MultiPlayer_f ();
 		break;
-
+#if 0
 	case K_BACKSPACE:
 		if (setup_cursor == 0)
 		{
@@ -1634,8 +1722,10 @@ forward:
 				setup_myname[strlen(setup_myname)-1] = 0;
 		}
 		break;
+#endif
 
 	default:
+#if 0
 		if (k < 32 || k > 127)
 			break;
 		if (setup_cursor == 0)
@@ -1656,6 +1746,8 @@ forward:
 				setup_myname[l] = k;
 			}
 		}
+#endif
+		break;
 	}
 
 	if (setup_top > 10)
@@ -4078,6 +4170,10 @@ static const int	lanConfig_cursor_table[] = {100, 120, 140, 172};
 static int	lanConfig_port;
 static char	lanConfig_portname[6];
 static char	lanConfig_joinname[30];
+static char lanConfig_portname_sub[] = "0123456789";
+static char lanConfig_joinname_sub[] = "abcdefghijklmnopqrstuvwxyz1234567890-_.~";
+static int lanConfig_isEdit = 0;
+//static char lanConfig_joinname_sub[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ!\"#$%&()*+,-./:;<=>?@[\\]^_'1234567890";
 
 static void M_Menu_LanConfig_f (void)
 {
@@ -4177,7 +4273,6 @@ static void M_LanConfig_Draw (void)
 		M_PrintWhite (basex, 192, m_return_reason);
 }
 
-
 static void M_LanConfig_Key (int key)
 {
 	int		l;
@@ -4185,36 +4280,63 @@ static void M_LanConfig_Key (int key)
 	switch (key)
 	{
 	case K_MENU_BACKBUTTON:
-		M_Menu_Net_f ();
+		//TODO:: Recover backup text of before going into edit mode.
+		if (!lanConfig_isEdit)
+			M_Menu_Net_f ();
+		else
+			lanConfig_isEdit = 0;
 		break;
 
 	case K_UPARROW:
-		S_LocalSound ("raven/menu1.wav");
-		lanConfig_cursor--;
-
-		if (JoiningGame)
+		if (!lanConfig_isEdit)
 		{
-			if (lanConfig_cursor < 0)
-				lanConfig_cursor = NUM_LANCONFIG_CMDS-1;
+			S_LocalSound ("raven/menu1.wav");
+			lanConfig_cursor--;
+
+			if (JoiningGame)
+			{
+				if (lanConfig_cursor < 0)
+					lanConfig_cursor = NUM_LANCONFIG_CMDS-1;
+			}
+			else
+			{
+				if (lanConfig_cursor < 0)
+					lanConfig_cursor = NUM_LANCONFIG_CMDS-2;
+			}
 		}
 		else
 		{
-			if (lanConfig_cursor < 0)
-				lanConfig_cursor = NUM_LANCONFIG_CMDS-2;
+			if (lanConfig_cursor == 0)
+				M_String_Add(lanConfig_portname, lanConfig_portname_sub);
+			else if (JoiningGame && lanConfig_cursor == 3)
+				M_String_Add(lanConfig_joinname, lanConfig_joinname_sub);
 		}
 		break;
 
 	case K_DOWNARROW:
-		S_LocalSound ("raven/menu1.wav");
-		lanConfig_cursor++;
-		if (lanConfig_cursor >= NUM_LANCONFIG_CMDS)
-			lanConfig_cursor = 0;
+		if (!lanConfig_isEdit)
+			{
+			S_LocalSound ("raven/menu1.wav");
+			lanConfig_cursor++;
+			if (lanConfig_cursor >= NUM_LANCONFIG_CMDS)
+				lanConfig_cursor = 0;
+		}
+		else
+		{
+			if (lanConfig_cursor == 0)
+				M_String_Sub(lanConfig_portname, lanConfig_portname_sub);
+			else if (JoiningGame && lanConfig_cursor == 3)
+				M_String_Sub(lanConfig_joinname, lanConfig_joinname_sub);
+		}
 		break;
 
 	case K_MENU_ACTION:
-		if ((JoiningGame && lanConfig_cursor <= 1) ||
-		    (!JoiningGame && lanConfig_cursor == 0))
+		if (JoiningGame && lanConfig_cursor == 1)
 			break;
+
+		//Toggle edit mode
+		if (lanConfig_cursor == 0 || (JoiningGame && lanConfig_cursor == 3))
+			lanConfig_isEdit = !lanConfig_isEdit;
 
 		m_entersound = true;
 		if (JoiningGame)
@@ -4233,7 +4355,9 @@ static void M_LanConfig_Key (int key)
 			M_Menu_Search_f();
 			break;
 		}
+		break;
 
+	case K_MENU_JOINGAME:
 		if (lanConfig_cursor == 3)
 		{
 			m_return_state = m_state;
@@ -4245,7 +4369,7 @@ static void M_LanConfig_Key (int key)
 		}
 
 		break;
-
+#if 0
 	case K_BACKSPACE:
 		if (lanConfig_cursor == 0)
 		{
@@ -4260,8 +4384,16 @@ static void M_LanConfig_Key (int key)
 				lanConfig_joinname[l-1] = 0;
 		}
 		break;
-
+#endif
 	case K_LEFTARROW:
+		if (lanConfig_isEdit)
+		{
+			if (lanConfig_cursor == 0)
+				M_String_Backspace(lanConfig_portname);
+			else if (JoiningGame && lanConfig_cursor == 3)
+				M_String_Backspace(lanConfig_joinname);
+		}
+
 		if (lanConfig_cursor != 1 || !JoiningGame)
 			break;
 
@@ -4279,8 +4411,15 @@ static void M_LanConfig_Key (int key)
 		if (setup_class > MAX_PLAYER_CLASS - PORTALS_EXTRA_CLASSES - 1 && !(gameflags & GAME_PORTALS))
 			setup_class = MAX_PLAYER_CLASS - PORTALS_EXTRA_CLASSES -1;
 		break;
-
 	case K_RIGHTARROW:
+		if (lanConfig_isEdit)
+		{
+			if (lanConfig_cursor == 0)
+				M_String_Space(lanConfig_portname, lanConfig_portname_sub, 6);
+			else if (JoiningGame && lanConfig_cursor == 3)
+				M_String_Space(lanConfig_joinname, lanConfig_joinname_sub, 29);
+		}
+
 		if (lanConfig_cursor != 1 || !JoiningGame)
 			break;
 
@@ -4300,6 +4439,8 @@ static void M_LanConfig_Key (int key)
 		break;
 
 	default:
+//disabled
+#if (0)
 		if (key < 32 || key > 127)
 			break;
 
@@ -4324,6 +4465,8 @@ static void M_LanConfig_Key (int key)
 				lanConfig_portname[l] = key;
 			}
 		}
+#endif
+		break;
 	}
 
 	if (StartingGame && lanConfig_cursor == 2)

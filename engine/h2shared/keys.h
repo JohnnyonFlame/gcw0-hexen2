@@ -142,6 +142,7 @@
 #define K_MENU_CANCELBIND		K_ENTER
 #define K_MENU_DELETEBIND		' '
 #define K_MENU_TOGGLE			K_ENTER
+#define K_MENU_JOINGAME			' '
 
 
 #define	MAXCMDLINE	256
