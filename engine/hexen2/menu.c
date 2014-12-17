@@ -2208,7 +2208,7 @@ static void M_Options_Key (int k)
 			Con_ToggleConsole_f ();
 			break;
 		case OPT_DEFAULTS:
-			Cbuf_AddText ("exec default.cfg\n");
+			Cbuf_AddText ("exec gcw0_default.cfg\n");
 			break;
 #ifdef GLQUAKE
 		case OPT_OPENGL:
@@ -2596,6 +2596,7 @@ static const char *bindnames[][2] =
 	{"+moveright",		"step right"},
 	{"+strafe",		"sidestep"},
 	{"+crouch",		"crouch"},
+	{"toggle_crouch", "toggle crouch"},
 	{"+lookup",		"look up"},
 	{"+lookdown",		"look down"},
 	{"centerview",		"center view"},
