@@ -1927,7 +1927,9 @@ enum
 #ifdef GLQUAKE
 	OPT_OPENGL,
 #endif
+#if 0
 	OPT_VIDEO,
+#endif
 	OPTIONS_ITEMS
 };
 
@@ -2180,8 +2182,10 @@ static void M_Options_Draw (void)
 	M_Print (16 + (12 * 8), 60 + 8*OPT_CHASE_ACTIVE,	"Chase Mode");
 	M_DrawCheckbox (220, 60 + 8*OPT_CHASE_ACTIVE, chase_active.integer);
 
+#if 0
 	if (vid_menudrawfn)
 		M_Print (16 + (11 * 8), 60 + 8*OPT_VIDEO,	"Video Modes");
+#endif
 
 	// cursor
 	M_DrawCharacter (200, 60 + 8*options_cursor, 12 + ((int)(realtime*4) & 1));
@@ -2215,9 +2219,11 @@ static void M_Options_Key (int k)
 			M_Menu_OpenGL_f ();
 			break;
 #endif
+#if 0
 		case OPT_VIDEO:
 			M_Menu_Video_f ();
 			break;
+#endif
 		default:
 			M_AdjustSliders (1);
 			break;
@@ -2259,6 +2265,7 @@ static void M_Options_Key (int k)
 		}
 	}
 #endif
+#if 0
 	if (options_cursor == OPT_VIDEO && vid_menudrawfn == NULL)
 	{
 		if (k == K_UPARROW)
@@ -2266,6 +2273,7 @@ static void M_Options_Key (int k)
 		else
 			options_cursor = 0;
 	}
+#endif
 }
 
 
