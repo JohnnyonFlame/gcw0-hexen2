@@ -2,7 +2,7 @@
 
 if [ ! -e ~/.hexen2/data1/pak0.pak ]
 then
-	./visual_err "No valid Hexen II instalation found!" "Please make sure you copied the files into \$home/.hexen2/data1" "and that all filenames are lowercase, ie:" "Wrong: Pak0.pak" "Right: pak0.pak"
+	./visual_err "No valid Hexen II instalation found!" "Please copy the data1 folder into \$home/.hexen2" "Make sure files are lowercase, ie:" "Wrong: Pak0.pak" "Right: pak0.pak"
 	exit
 fi
 
