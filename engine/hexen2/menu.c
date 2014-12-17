@@ -341,6 +341,13 @@ static void M_String_Add (char *str, const char *substr)
 {
 	int len = strlen(str);
 
+	if (len == 0)
+	{
+		str[0] = substr[0];
+		str[1] = 0;
+		len++;
+	}
+
 	do {
 		str[len-1]++;
 	} while (!strchr(substr, str[len-1]) || str[len-1] == 0);
@@ -349,6 +356,13 @@ static void M_String_Add (char *str, const char *substr)
 static void M_String_Sub (char *str, const char *substr)
 {
 	int len = strlen(str);
+
+	if (len == 0)
+	{
+		str[0] = substr[0];
+		str[1] = 0;
+		len++;
+	}
 
 	do {
 		str[len-1]--;
