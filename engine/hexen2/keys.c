@@ -677,6 +677,60 @@ const char *Key_KeynumToString (int keynum)
 	return "<UNKNOWN KEYNUM>";
 }
 
+int Key_isKeyPrettyPrintable (int keynum)
+{
+	switch(keynum)
+	{
+	case K_ENTER:
+	case K_ESCAPE:
+	case K_CTRL:
+	case K_ALT:
+	case ' ':
+	case K_SHIFT:
+	case K_BACKSPACE:
+	case K_TAB:
+	case K_UPARROW:
+	case K_DOWNARROW:
+	case K_LEFTARROW:
+	case K_RIGHTARROW:
+		return 1;
+	default:
+		return 0;
+	}
+}
+
+const char *Key_KeynumToString_pretty (int keynum)
+{
+	switch(keynum)
+	{
+	case K_ENTER:
+		return "START";
+	case K_ESCAPE:
+		return "SELECT";
+	case K_CTRL:
+		return "A";
+	case K_ALT:
+		return "B";
+	case ' ':
+		return "Y";
+	case K_SHIFT:
+		return "X";
+	case K_BACKSPACE:
+		return "R";
+	case K_TAB:
+		return "L";
+	case K_UPARROW:
+		return "DPAD UP";
+	case K_DOWNARROW:
+		return "DPAD DOWN";
+	case K_LEFTARROW:
+		return "DPAD LEFT";
+	case K_RIGHTARROW:
+		return "DPAD RIGHT";
+	default:
+		return "???";
+	}
+}
 
 /*
 ===================

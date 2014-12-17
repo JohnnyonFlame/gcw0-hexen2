@@ -2627,13 +2627,13 @@ static void M_Keys_Draw (void)
 		}
 		else
 		{
-			name = Key_KeynumToString (keys[0]);
+			name = Key_KeynumToString_pretty (keys[0]);
 			M_Print (140, y, name);
 			x = strlen(name) * 8;
-			if (keys[1] != -1)
+			if (keys[1] != -1 && Key_isKeyPrettyPrintable(keys[1]))
 			{
 				M_Print (140 + x + 8, y, "or");
-				M_Print (140 + x + 32, y, Key_KeynumToString (keys[1]));
+				M_Print (140 + x + 32, y, Key_KeynumToString_pretty (keys[1]));
 			}
 		}
 	}
@@ -2645,7 +2645,7 @@ static void M_Keys_Draw (void)
 	}
 	else
 	{
-		M_Print (18, 64, "Enter to change, backspace to clear");
+		M_Print (18, 64, "A to change, Y to clear");
 		M_DrawCharacter (130, 80 + (keys_cursor-keys_top)*8, 12+((int)(realtime*4)&1));
 	}
 }
@@ -3603,7 +3603,7 @@ static void M_Quit_Draw (void)
 	}
 
 	y += (QUIT_SIZE * 8) + 8;
-	M_PrintWhite (16 + (10 * 8), y,  "Press y to exit");
+	M_PrintWhite (16 + (10 * 8), y,  "Press A to exit");
 }
 
 //=============================================================================
