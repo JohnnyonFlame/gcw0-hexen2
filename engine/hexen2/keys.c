@@ -282,6 +282,7 @@ static void CompleteCommand (void)
 		q_strlcpy (workline + key_linepos, backup, MAXCMDLINE-key_linepos);
 }
 
+#if 0
 static void PasteToConsole (void)
 {
 	char *cbd, *p, *workline;
@@ -327,6 +328,7 @@ static void PasteToConsole (void)
   done:
 	Z_Free(cbd);
 }
+#endif
 
 /*
 ====================
@@ -335,15 +337,17 @@ Key_Console
 Interactive line editing and console scrollback
 ====================
 */
+
+static char keyConsole_string_sub[] = " abcdefghijklmnopqrstuvwxyz!\"#$%&()*+,-./:;<=>?@[\\]^_'1234567890";
 static void Key_Console (int key)
 {
 	int	history_line_last;
 	size_t		len;
 	char	*workline = key_lines[edit_line];
 
-	switch (key)
+	switch(key)
 	{
-	case K_ENTER:
+	case K_MENU_ACTION:
 		Cbuf_AddText (workline + 1);	// skip the >
 		Cbuf_AddText ("\n");
 		Con_Printf ("%s\n", workline);
@@ -356,87 +360,43 @@ static void Key_Console (int key)
 			SCR_UpdateScreen ();	// force an update, because the command
 								// may take some time
 		return;
-
-	case K_TAB:
-		CompleteCommand ();
-		return;
-
-	case K_LEFTARROW:
-		if (key_linepos < 2)
-			return;
-		if (keydown[K_CTRL])
-		{
-		/* ctrl - left, word processor style: first,
-		 * move to the ending of previous word, then
-		 * move to its beginning
-		 */
-			char *p = workline + key_linepos - 1;
-			while (p != workline && *p == ' ')
-				--p;
-			while (p != workline)
-			{
-				if (*--p == ' ')
-					break;
-			}
-			key_linepos = (int)(p - workline) + 1;
-		}
-		else	/* simple cursor-to-left, only. */
-		{
-			--key_linepos;
-		}
-		return;
-
-	case K_RIGHTARROW:
-		if (!workline[key_linepos])
-			return;
-		if (keydown[K_CTRL])
-		{
-		/* ctrl - right, word processor style: if
-		 * we are on a text move to its end, then
-		 * move to the beginning of the next word
-		 */
-			char *p = workline + key_linepos;
-			while (*p && *p != ' ')
-				++p;
-			while (*p && *p == ' ')
-				++p;
-			key_linepos = (int)(p - workline);
-		}
-		else	/* simple cursor-to-right only. */
-		{
-			++key_linepos;
-		}
-		return;
-
-	case K_BACKSPACE:
-		if (key_linepos > 1)
-		{
-			workline += key_linepos - 1;
-			if (workline[1])
-			{
-				len = strlen(workline);
-				memmove (workline, workline + 1, len);
-			}
-			else	*workline = 0;
-
-			key_linepos--;
-		}
-		return;
-
-	case K_DEL:
-		workline += key_linepos;
-		if (*workline)
-		{
-			if (workline[1])
-			{
-				len = strlen(workline);
-				memmove (workline, workline + 1, len);
-			}
-			else	*workline = 0;
-		}
-		return;
+	case K_MENU_BACKBUTTON:
+		Con_Printf ("%s\n", workline);
+		workline[0] = ']';
+		workline[1] = 0;
+		key_linepos = 1;
+		history_line= edit_line;
+		break;
 
 	case K_UPARROW:
+		if (key_linepos > 1)
+		{
+			do
+			{
+				workline[key_linepos-1]++;
+			} while (workline[key_linepos-1] == 0 ||
+					!strchr(keyConsole_string_sub, workline[key_linepos-1]));
+		}
+		else
+			goto do_space;
+
+		break;
+
+	case K_DOWNARROW:
+		if (key_linepos > 1)
+		{
+			do
+			{
+				workline[key_linepos-1]--;
+			} while (workline[key_linepos-1] == 0 ||
+					!strchr(keyConsole_string_sub, workline[key_linepos-1]));
+		}
+		else
+			goto do_space;
+
+		break;
+
+	case K_TAB:
 		history_line_last = history_line;
 		do
 		{
@@ -450,7 +410,7 @@ static void Key_Console (int key)
 		key_linepos = strlen(workline);
 		return;
 
-	case K_DOWNARROW:
+	case K_BACKSPACE:
 		if (history_line == edit_line)
 			return;
 		do
@@ -471,66 +431,34 @@ static void Key_Console (int key)
 		}
 		return;
 
-	case K_PGUP:
-	case K_MWHEELUP:
-		con->display -= 2;
-		return;
+	case K_LEFTARROW:
+		if (key_linepos > 1)
+		{
+			workline += key_linepos - 1;
+			if (workline[1])
+			{
+				len = strlen(workline);
+				memmove (workline, workline + 1, len);
+			}
+			else	*workline = 0;
 
-	case K_PGDN:
-	case K_MWHEELDOWN:
-		con->display += 2;
-		if (con->display > con->current)
-			con->display = con->current;
-		return;
-
-	case K_HOME:
-		if (keydown[K_CTRL])
-			con->display = con->current - con_totallines + 10;
-		else	key_linepos = 1;
-		return;
-
-	case K_END:
-		if (keydown[K_CTRL])
-			con->display = con->current;
-		else	key_linepos = strlen(workline);
-		return;
-
-	case K_INS:
-		if (keydown[K_SHIFT])		/* Shift+Ins paste */
-			PasteToConsole();
-		else	key_insert ^= 1;
-		return;
-
-	case 'v':
-	case 'V':
-#if defined(PLATFORM_OSX) || defined(PLATFORM_MAC)
-		if (keydown[K_COMMAND]) {	/* Cmd+V paste (Mac-only) */
-			PasteToConsole();
-			return;
+			key_linepos--;
 		}
-#endif
-		if (keydown[K_CTRL]) {		/* Ctrl+v paste */
-			PasteToConsole();
-			return;
-		}
+		return;
+
+	case K_RIGHTARROW:
+		goto do_space;
 		break;
 
-	case 'c':
-	case 'C':
-		if (keydown[K_CTRL]) {		/* Ctrl+C: abort the line -- S.A */
-			Con_Printf ("%s\n", workline);
-			workline[0] = ']';
-			workline[1] = 0;
-			key_linepos = 1;
-			history_line= edit_line;
-			return;
-		}
+	case ' ':
+		CompleteCommand ();
 		break;
 	}
 
-	if (key < 32 || key > 127)
-		return;	// non printable
+	return;
 
+	//ugly. but I'd rather do this than abuse macros or repeat code
+	do_space:
 	if (key_linepos < MAXCMDLINE - 1)
 	{
 		qboolean endpos = !workline[key_linepos];
@@ -541,12 +469,12 @@ static void Key_Console (int key)
 			workline += key_linepos;
 			len = strlen(workline) + 1;
 			memmove (workline + 1, workline, len);
-			*workline = key;
+			*workline = ' ';
 		}
 		else
 		{
 			workline += key_linepos;
-			*workline = key;
+			*workline = ' ';
 			// null terminate if at the end
 			if (endpos)
 				workline[1] = 0;
@@ -896,6 +824,7 @@ void Key_Init (void)
 	consolekeys[K_SHIFT] = true;
 	consolekeys[K_MWHEELUP] = true;
 	consolekeys[K_MWHEELDOWN] = true;
+	consolekeys[K_MENU_ACTION] = true;
 	consolekeys['`'] = false;
 	consolekeys['~'] = false;
 
