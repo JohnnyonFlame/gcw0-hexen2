@@ -615,7 +615,7 @@ void ScrollTitle (const char *name)
 /* MAIN MENU */
 
 static int	m_main_cursor;
-#define	MAIN_ITEMS	5
+#define	MAIN_ITEMS	4
 
 static void BGM_RestartMusic(void);
 static char	old_bgmtype[20];	// S.A
@@ -647,8 +647,7 @@ static void M_Main_Draw (void)
 	M_DrawBigString (72, 60 + (0 * 20), "SINGLE PLAYER");
 	M_DrawBigString (72, 60 + (1 * 20), "MULTIPLAYER");
 	M_DrawBigString (72, 60 + (2 * 20), "OPTIONS");
-	M_DrawBigString (72, 60 + (3 * 20), "HELP");
-	M_DrawBigString (72, 60 + (4 * 20), "QUIT");
+	M_DrawBigString (72, 60 + (3 * 20), "QUIT");
 
 	f = (int)(realtime * 10)%8;
 	M_DrawTransPic (43, 54 + m_main_cursor * 20,Draw_CachePic( va("gfx/menu/menudot%i.lmp", f+1 ) ) );
@@ -704,10 +703,6 @@ static void M_Main_Key (int key)
 			break;
 
 		case 3:
-			M_Menu_Help_f ();
-			break;
-
-		case 4:
 			M_Menu_Quit_f ();
 			break;
 		}
