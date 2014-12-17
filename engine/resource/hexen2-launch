@@ -1,0 +1,15 @@
+#!/bin/sh
+
+if [ ! -e ~/.hexen2/data1/pak0.pak ]
+then
+	./visual_err "No valid Hexen II instalation found!" "Please make sure you copied the files into \$home/.hexen2/data1" "and that all filenames are lowercase, ie:" "Wrong: Pak0.pak" "Right: pak0.pak"
+	exit
+fi
+
+if [ -e ~/.hexen2/data1/hexen.rc ]
+then
+	./visual_err "hexen.rc file detected on $home/.hexen2/data1!" "Please delete hexen.rc to ensure you get the correct defaults."
+	exit
+fi
+
+./hexen2

@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Hexen II
+Comment=Save Thyrion from the Serpent Riders
+Exec=hexen2-launch
+Terminal=false
+Type=Application
+StartupNotify=true
+Icon=hexen2
+Categories=games;
