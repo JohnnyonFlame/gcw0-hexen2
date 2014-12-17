@@ -1166,12 +1166,12 @@ static void VID_MenuKey (int key)
 {
 	switch (key)
 	{
-	case K_ESCAPE:
+	case K_MENU_BACKBUTTON:
 		vid_cursor = (num_fmodes) ? 0 : VID_RESOLUTION;
 		M_Menu_Options_f ();
 		return;
 
-	case K_ENTER:
+	case K_MENU_ACTION:
 		switch (vid_cursor)
 		{
 		case VID_RESET:
