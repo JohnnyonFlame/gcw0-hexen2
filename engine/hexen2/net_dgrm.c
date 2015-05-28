@@ -1135,7 +1135,13 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 		if (MSG_ReadByte() != CCREP_SERVER_INFO)
 			continue;
 
-		dfunc.GetAddrFromName(MSG_ReadString(), &readaddr);
+		/*
+			JohnnyonFlame: I don't see any reason to use the broadcasted IP,
+			we've got an address from the socket, why use the one on the
+			response? Feel free to educate me otherwise.
+		*/
+		//dfunc.GetAddrFromName(MSG_ReadString(), &readaddr);
+		Con_Printf("Ignoring IP %s from the response\n", MSG_ReadString());
 		// search the cache for this server
 		for (n = 0; n < hostCacheCount; n++)
 		{
