@@ -126,7 +126,7 @@ USE_MPATH=yes
 # Enable/disable codecs for streaming music support:
 USE_CODEC_WAVE=yes
 USE_CODEC_FLAC=no
-USE_CODEC_MP3=yes
+USE_CODEC_MP3=no
 USE_CODEC_VORBIS=yes
 USE_CODEC_OPUS=no
 # either mikmod (preferred) or modplug (both possible
