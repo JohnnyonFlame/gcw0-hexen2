@@ -650,3 +650,13 @@ int UDP_SetSocketPort (struct qsockaddr *addr, int port)
 
 //=============================================================================
 
+void UDP_SetBroadcastAddr (char *string)
+{
+	struct hostent *host = gethostbyname(string);
+	if (!host)
+	{
+		Con_SafePrintf("Failed to resolve broadcast addr %s\n", string);
+	}
+
+	memcpy(&broadcastaddr.sin_addr.s_addr, host->h_addr, host->h_length);
+}

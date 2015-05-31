@@ -1122,7 +1122,7 @@ ifeq ($(USE_3DFXGAMMA),yes)
 SYSOBJ_GL_VID+= fx_gamma.o
 endif
 SYSOBJ_SOFT_VID:= vid_sdl.o
-SYSOBJ_NET := net_bsd.o net_udp.o
+SYSOBJ_NET := net_bsd.o net_udp.o net_udp_if.o
 SYSOBJ_SYS := sys_unix.o
 SYSOBJ_SYS += sys_sdl.o
 endif
@@ -1131,7 +1131,7 @@ ifeq ($(TARGET_OS),darwin)
 SYSOBJ_INPUT := in_sdl.o
 SYSOBJ_GL_VID:= gl_vidsdl.o
 SYSOBJ_SOFT_VID:= vid_sdl.o
-SYSOBJ_NET := net_bsd.o net_udp.o
+SYSOBJ_NET := net_bsd.o net_udp.o net_udp_if.o
 SYSOBJ_SYS := sys_unix.o
 SYSOBJ_SYS += sys_osx.o
 SYSOBJ_SYS += SDLMain.o
@@ -1146,7 +1146,7 @@ SYSOBJ_INPUT := in_amiga.o
 SYSOBJ_GL_VID:= gl_vidamiga.o
 SYSOBJ_SOFT_VID:= vid_cgx.o
 endif
-SYSOBJ_NET := net_bsd.o net_udp.o
+SYSOBJ_NET := net_bsd.o net_udp.o net_udp_if.o
 SYSOBJ_SYS := sys_amiga.o
 endif
 ifeq ($(TARGET_OS),morphos)
@@ -1159,7 +1159,7 @@ SYSOBJ_INPUT := in_amiga.o
 SYSOBJ_GL_VID:= gl_vidamiga.o
 SYSOBJ_SOFT_VID:= vid_cgx.o
 endif
-SYSOBJ_NET := net_bsd.o net_udp.o
+SYSOBJ_NET := net_bsd.o net_udp.o net_udp_if.o
 SYSOBJ_SYS := sys_amiga.o
 endif
 

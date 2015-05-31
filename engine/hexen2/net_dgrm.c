@@ -24,12 +24,16 @@
 
 #define BAN_TEST
 
+#include <net/if.h>
+
 #include "q_stdinc.h"
 #include "arch_def.h"
 #include "net_sys.h"
 #include "quakedef.h"
 #include "net_defs.h"
 #include "net_dgrm.h"
+#include "net_udp.h"
+#include "net_udp_if.h"
 
 // these two macros are to make the code more readable
 #define sfunc	net_landrivers[sock->landriver]
@@ -1083,7 +1087,6 @@ qsocket_t *Datagram_CheckNewConnections (void)
 	return ret;
 }
 
-
 #if !defined(SERVERONLY)
 static void _Datagram_SearchForHosts (qboolean xmit)
 {
@@ -1141,7 +1144,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 			response? Feel free to educate me otherwise.
 		*/
 		//dfunc.GetAddrFromName(MSG_ReadString(), &readaddr);
-		Con_Printf("Ignoring IP %s from the response\n", MSG_ReadString());
+		MSG_ReadString(); /* ignore broadcasted IP */
 		// search the cache for this server
 		for (n = 0; n < hostCacheCount; n++)
 		{
@@ -1195,6 +1198,7 @@ static void _Datagram_SearchForHosts (qboolean xmit)
 
 void Datagram_SearchForHosts (qboolean xmit)
 {
+#if 0
 	for (net_landriverlevel = 0; net_landriverlevel < net_numlandrivers; net_landriverlevel++)
 	{
 		if (hostCacheCount == HOSTCACHESIZE)
@@ -1202,6 +1206,24 @@ void Datagram_SearchForHosts (qboolean xmit)
 		if (net_landrivers[net_landriverlevel].initialized)
 			_Datagram_SearchForHosts (xmit);
 	}
+#endif
+
+	int i;
+	struct ifr_t *ifr_ptr = NULL;
+	int ifr_cnt = UDP_ifQueryInterfaces(&ifr_ptr);
+
+	net_landriverlevel = 0; /* FORCE UDP */
+
+	if (ifr_cnt <= 0 || !ifr_ptr)
+		return;
+
+	for (i=0; i<ifr_cnt; i++)
+	{
+		UDP_SetBroadcastAddr(ifr_ptr[i].ifbroad);
+		_Datagram_SearchForHosts (xmit);
+	}
+
+	free(ifr_ptr);
 }
 
 
